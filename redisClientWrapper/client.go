@@ -20,6 +20,8 @@ func (c *ClientWrapper) IsAlive() bool{
 	return true
 }
 
+func (c *ClientWrapper) 
+
 func ClientWrapperFactory(add string, port int) *ClientWrapper {
 	var opt redis.Options
 	opt.Addr = add + ":" + strconv.Itoa(port)
