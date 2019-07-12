@@ -15,4 +15,8 @@ func main(){
 	} else {
 		fmt.Println("redis is down")
 	}
+	client.AddToSet("pending",[]string{"a","b"})
+	client.AddToSet("processed",[]string{"a"})
+	result := client.RemoveInterSectionAndRetrieve("pending","processed",1)
+	fmt.Println(result)
 }
