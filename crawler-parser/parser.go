@@ -5,32 +5,23 @@ import (
 	_ "io"
 )
 
-//func extractUrls()
-
-type LineParser interface {
-	isValid(line string) bool
-	parse() string
-}
-
+//LineFilter validates lines are in a specific format like - a number, regualr text, type of HTML token
 type LineFilter interface {
-	isValid(line string) bool
+	isValid(line interface{}) bool
 }
 
-type LinePusher interface {
-	push(line string)
-	pushLines(lines []string)
+//LineEmitter emits lines
+type LineEmitter interface {
+	push(line interface{})
+	pushLines(lines []interface{})
 }
 
-type LineReader interface{
-	read() string
-	readAll() []string
-}
+//FilterEmitter recieve array of lines and emit lines that were valid
+func FilterEmitter(input []string, filter LineFilter, lineEmitter LineEmitter) {
 
-func parse(input []string, filter LineFilter, linePusher LinePusher){
-
-	for _,line := range input {
+	for _, line := range input {
 		if filter.isValid(line) {
-			linePusher.push(line)
+			lineEmitter.push(line)
 		}
 	}
 }
