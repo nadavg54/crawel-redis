@@ -38,7 +38,7 @@ func (c *ClientWrapper) RemoveInterSectionAndRetrieve(set1 string, set2 string, 
 	//processed pending
 	pipeliner := c.internalClient.TxPipeline()
 	pipeliner.SDiffStore(set1, set1, set2)
-	exeResult := pipeliner.SRandMemberN(set1, numberOfEleToRet)
+	exeResult := pipeliner.SPopN(set1, numberOfEleToRet)
 	_, err := pipeliner.Exec()
 
 	if err != nil {
@@ -59,3 +59,9 @@ func ClientWrapperFactory(add string, port int) *ClientWrapper {
 	instance := ClientWrapper{internalClient: newInternalClient}
 	return &instance
 }
+
+// func main() {
+// 	client := ClientWrapperFactory("localhost", 6379)
+// 	res, _ := client.RemoveInterSectionAndRetrieve("set1", "set2", 300)
+// 	fmt.Println(res)
+// }
