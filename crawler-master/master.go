@@ -2,8 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
-	"log"
 	"net"
 	"os"
 	"strconv"
@@ -12,14 +10,31 @@ import (
 
 	"github.com/crawel-redis/config"
 	"github.com/crawel-redis/redisclientwrapper"
+	log "github.com/sirupsen/logrus"
 )
 
-const ()
+func init() {
+	// Log as JSON instead of the default ASCII formatter.
+	log.SetFormatter(&log.JSONFormatter{})
+
+	// Output to stdout instead of the default stderr
+	// Can be any io.Writer, see below for File example
+	logfile, err := os.OpenFile("/tmp/redis-crawler-master.log", os.O_RDWR|os.O_CREATE, 0666)
+	if err != nil {
+		os.Exit(1)
+	}
+	log.SetOutput(logfile)
+
+	// Only log the warning severity or above.
+	log.SetLevel(log.InfoLevel)
+
+	log.SetOutput(logfile)
+
+	log.SetReportCaller(true)
+}
 
 func main() {
 
-	logfile, err := os.OpenFile("/tmp/redis-crawler-master.log", os.O_RDWR|os.O_CREATE, 0666)
-	log.SetOutput(logfile)
 	address := flag.String("address", "localhost:6379", "server address")
 	workersAdresses := flag.String("workers", "localhost:12345", "comma seperated list of workers")
 	rootURL := flag.String("url to crawl", "http://www.nba.com", "url to crawl")
@@ -37,8 +52,7 @@ func main() {
 	addressArr := strings.Split(*address, ":")
 	port, err := strconv.Atoi(addressArr[1])
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "port isn't a number")
-		os.Exit(1)
+		log.Fatal("port isn't a number")
 	}
 
 	visitRoot := true
@@ -57,32 +71,11 @@ func main() {
 		}
 		if err != nil {
 			log.Fatal("master got error when trying to reach redis", err)
-			os.Exit(1)
 		}
 		for _, currURL := range urlsToVisist {
 			urls <- currURL
 		}
-
 	}
-
-	//resp, err := http.Get("http://www.example.com")
-
-	//root, err := html.Parse(resp.Body)
-	//fmt.Println(root)
-	//content, err := ioutil.ReadAll(resp.Body)
-
-	//fmt.Println("hello")
-	//fmt.Println(string(content))
-
-	// conn, err := net.Dial("tcp", *address)
-	// if err != nil {
-	// 	log.Print("cant connect")
-	// 	return
-	// }
-
-	// conn.Write([]byte(*rootURL))
-	// conn.Close()
-
 }
 
 func miniMaster(urlsChan <-chan string, workerAdd string) {
@@ -92,13 +85,12 @@ func miniMaster(urlsChan <-chan string, workerAdd string) {
 	for {
 		conn, err := net.Dial("tcp", workerAdd)
 		if err != nil {
-			log.Print("minimaster - got error connection to worker " + err.Error())
-
+			log.Warn("got error connection to worker " + err.Error())
 			time.Sleep(time.Second)
 			continue
 		}
 		url := <-urlsChan
-		log.Println("sending url " + url + " from minimaster")
+		log.Info("sending url " + url + " from minimaster")
 		conn.Write([]byte(url))
 		conn.Close()
 	}
