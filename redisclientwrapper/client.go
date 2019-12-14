@@ -51,6 +51,19 @@ func (c *ClientWrapper) RemoveInterSectionAndRetrieve(set1 string, set2 string, 
 	return elements, nil
 }
 
+//AddToMultipleSets transaction adding values to two sets
+func (c *ClientWrapper) AddToMultipleSets(set1 string, val1 []string, set2 string, val2 []string) error {
+	pipeliner := c.internalClient.TxPipeline()
+	pipeliner.SAdd(set1, val1)
+	pipeliner.SAdd(set2, val2)
+	_, err := pipeliner.Exec()
+	
+	if err != nil {
+		return  err
+	}
+	return nil
+}
+
 //ClientWrapperFactory builds new redis wrapper instance
 func ClientWrapperFactory(add string, port int) *ClientWrapper {
 	var opt redis.Options

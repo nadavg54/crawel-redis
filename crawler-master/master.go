@@ -18,8 +18,8 @@ const ()
 
 func main() {
 
-	//logfile, err := os.OpenFile("/tmp/redis-crawler-master.log", os.O_RDWR|os.O_CREATE, 0666)
-	//log.SetOutput(logfile)
+	logfile, err := os.OpenFile("/tmp/redis-crawler-master.log", os.O_RDWR|os.O_CREATE, 0666)
+	log.SetOutput(logfile)
 	address := flag.String("address", "localhost:6379", "server address")
 	workersAdresses := flag.String("workers", "localhost:12345", "comma seperated list of workers")
 	rootURL := flag.String("url to crawl", "http://www.nba.com", "url to crawl")
@@ -87,16 +87,16 @@ func main() {
 
 func miniMaster(urlsChan <-chan string, workerAdd string) {
 
-	conn, err := net.Dial("tcp", workerAdd)
 	//connWriter := bufio.NewWriter(conn)
-	if err != nil {
-		//log.Fatal("mimi master cant reach worker "+workerAdd, err)
-		return
-		//os.Exit(1)
-	}
 
 	for {
+		conn, err := net.Dial("tcp", workerAdd)
+		if err != nil {
+			log.Print("minimaster - got error connection to worker " + err.Error())
 
+			time.Sleep(time.Second)
+			continue
+		}
 		url := <-urlsChan
 		log.Println("sending url " + url + " from minimaster")
 		conn.Write([]byte(url))
