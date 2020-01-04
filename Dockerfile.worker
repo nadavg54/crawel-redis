@@ -12,6 +12,11 @@ ADD ./ /redis-crawler
 # any further commands inside our /app
 # directory
 WORKDIR /redis-crawler/crawler-worker
+#install git
+RUN apk update && apk add git && go get gopkg.in/natefinch/lumberjack.v2
+EXPOSE 8080
+#get all go depdencies
+RUN go get -v -d ./
 # we run go build to compile the binary
 # executable of our Go program
 RUN go build -o main .
