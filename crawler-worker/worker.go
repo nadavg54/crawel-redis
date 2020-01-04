@@ -9,11 +9,11 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/crawel-redis/config"
-	"github.com/crawel-redis/redisclientwrapper"
+	"github.com/nadavg54/crawel-redis/config"
+	"github.com/nadavg54/crawel-redis/redisclientwrapper"
 	log "github.com/sirupsen/logrus"
 
-	parser "github.com/crawel-redis/crawler-parser/urls-parser"
+	parser "github.com/nadavg54/crawel-redis/crawler-parser/urls-parser"
 )
 
 //const PORT_LISTEN_TO = 1234
@@ -51,7 +51,7 @@ func main() {
 
 	urls := make(chan string)
 
-	ln, err := net.Listen("tcp", ":8080")
+	ln, err := net.Listen("tcp", ":8011")
 	if err != nil {
 		// handle error
 	}

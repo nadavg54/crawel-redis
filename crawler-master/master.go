@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/crawel-redis/config"
-	"github.com/crawel-redis/redisclientwrapper"
+	"github.com/nadavg54/crawel-redis/config"
+	"github.com/nadavg54/crawel-redis/redisclientwrapper"
 	log "github.com/sirupsen/logrus"
 )
 

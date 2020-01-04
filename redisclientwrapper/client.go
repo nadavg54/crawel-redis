@@ -57,9 +57,9 @@ func (c *ClientWrapper) AddToMultipleSets(set1 string, val1 []string, set2 strin
 	pipeliner.SAdd(set1, val1)
 	pipeliner.SAdd(set2, val2)
 	_, err := pipeliner.Exec()
-	
+
 	if err != nil {
-		return  err
+		return err
 	}
 	return nil
 }
